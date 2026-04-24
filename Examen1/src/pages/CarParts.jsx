@@ -26,9 +26,7 @@ const CarParts = () => {
         }
 
         const data = await res.json();
-
         const articles = data?.record?.articles || [];
-
         setParts(articles);
       } catch (err) {
         console.error(err);
@@ -41,106 +39,163 @@ const CarParts = () => {
     fetchData();
   }, []);
 
-  // 🔵 ESTADOS BASE
-  if (loading) return <p>Cargando repuestos...</p>;
-  if (error) return <p>{error}</p>;
-  if (!parts || parts.length === 0)
-    return <p>No hay repuestos disponibles</p>;
+  if (loading) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          background: "linear-gradient(135deg, #0a0a0a, #1a1a1a)",
+          color: "#ff2d2d",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        Cargando repuestos...
+      </div>
+    );
+  }
 
-  // 🔍 BUSCADOR
+  if (error) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          background: "linear-gradient(135deg, #0a0a0a, #1a1a1a)",
+          color: "#ff3b3b",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {error}
+      </div>
+    );
+  }
+
+  if (!parts.length) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          background: "linear-gradient(135deg, #0a0a0a, #1a1a1a)",
+          color: "#ccc",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        No hay repuestos disponibles
+      </div>
+    );
+  }
+
   const filteredParts = parts.filter((part) =>
     (part.articleProductName || "")
       .toLowerCase()
       .includes(search.toLowerCase())
   );
 
-  // 🔥 PAGINACIÓN
   const visibleParts = filteredParts.slice(0, visibleCount);
-
-  const loadMore = () => {
-    setVisibleCount((prev) => prev + 10);
-  };
 
   return (
     <div
       style={{
-        padding: "30px",
-        maxWidth: "800px",
-        margin: "0 auto",
-        fontFamily: "Arial, sans-serif",
-        background: "#f7f7f7",
         minHeight: "100vh",
+        padding: "30px",
+        background: "linear-gradient(135deg, #0a0a0a, #1a1a1a)",
+        fontFamily: "'Segoe UI', sans-serif",
+        color: "#fff",
       }}
     >
-      <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
-        🚗 Repuestos de Carro
-      </h2>
+      <h1
+        style={{
+          textAlign: "center",
+          color: "#ff2d2d",
+          letterSpacing: "3px",
+          marginBottom: "25px",
+        }}
+      >
+        🔧 REPUESTOS AUTOMOTRICES
+      </h1>
 
-      {/* 🔍 BUSCADOR */}
       <input
         type="text"
-        placeholder="🔍 Buscar repuesto..."
+        placeholder="Buscar repuesto..."
         value={search}
         onChange={(e) => {
           setSearch(e.target.value);
           setVisibleCount(10);
         }}
         style={{
-          padding: "10px 12px",
-          marginBottom: "20px",
+          display: "block",
+          margin: "0 auto 25px",
+          padding: "12px 15px",
           width: "100%",
-          maxWidth: "350px",
-          borderRadius: "10px",
-          border: "1px solid #ddd",
+          maxWidth: "420px",
+          borderRadius: "12px",
+          border: "1px solid #333",
+          background: "#111",
+          color: "#fff",
           outline: "none",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
         }}
       />
 
-      {/* 🔥 LISTA */}
       {visibleParts.length === 0 ? (
-        <p>No se encontraron resultados</p>
+        <p style={{ textAlign: "center", color: "#aaa" }}>
+          No se encontraron resultados
+        </p>
       ) : (
         visibleParts.map((part) => (
           <div
             key={part.articleId}
             style={{
-              background: "#fff",
-              border: "1px solid #eee",
+              background: "#141414",
+              borderLeft: "5px solid #ff2d2d",
               margin: "12px 0",
               padding: "15px",
               borderRadius: "12px",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
+              boxShadow: "0 6px 15px rgba(0,0,0,0.5)",
+              transition: "transform 0.2s",
             }}
+            onMouseOver={(e) =>
+              (e.currentTarget.style.transform = "scale(1.02)")
+            }
+            onMouseOut={(e) =>
+              (e.currentTarget.style.transform = "scale(1)")
+            }
           >
-            <h3 style={{ marginBottom: "5px" }}>
+            <h3 style={{ color: "#ff4d4d", marginBottom: "6px" }}>
               🚗 {part.articleProductName}
             </h3>
-            <p style={{ margin: "4px 0" }}>
-              <strong>Código:</strong> {part.articleNo}
+            <p style={{ margin: "3px 0", color: "#ccc" }}>
+              Código: {part.articleNo}
             </p>
-            <p style={{ margin: "4px 0" }}>
-              <strong>Proveedor:</strong> {part.supplierName}
+            <p style={{ margin: "3px 0", color: "#999" }}>
+              Proveedor: {part.supplierName}
             </p>
           </div>
         ))
       )}
 
-      {/* 🔥 VER MÁS */}
       {visibleCount < filteredParts.length && (
         <button
-          onClick={loadMore}
+          onClick={() => setVisibleCount((prev) => prev + 10)}
           style={{
-            marginTop: "20px",
-            padding: "10px 20px",
-            background: "#111",
+            display: "block",
+            margin: "25px auto 0",
+            padding: "12px 30px",
+            background: "#ff2d2d",
             color: "#fff",
             border: "none",
-            borderRadius: "10px",
+            borderRadius: "12px",
             cursor: "pointer",
+            fontWeight: "bold",
+            letterSpacing: "1px",
+            boxShadow: "0 0 15px rgba(255, 45, 45, 0.4)",
           }}
         >
-          Ver más
+          VER MÁS
         </button>
       )}
     </div>
