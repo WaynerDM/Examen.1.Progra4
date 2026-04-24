@@ -27,8 +27,6 @@ const CarParts = () => {
 
         const data = await res.json();
 
-        console.log("DATA API:", data);
-
         const articles = data?.record?.articles || [];
 
         setParts(articles);
@@ -46,7 +44,6 @@ const CarParts = () => {
   // 🔵 ESTADOS BASE
   if (loading) return <p>Cargando repuestos...</p>;
   if (error) return <p>{error}</p>;
-
   if (!parts || parts.length === 0)
     return <p>No hay repuestos disponibles</p>;
 
@@ -65,23 +62,38 @@ const CarParts = () => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Repuestos de Carro 🚗</h2>
+    <div
+      style={{
+        padding: "30px",
+        maxWidth: "800px",
+        margin: "0 auto",
+        fontFamily: "Arial, sans-serif",
+        background: "#f7f7f7",
+        minHeight: "100vh",
+      }}
+    >
+      <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
+        🚗 Repuestos de Carro
+      </h2>
 
       {/* 🔍 BUSCADOR */}
       <input
         type="text"
-        placeholder="Buscar repuesto..."
+        placeholder="🔍 Buscar repuesto..."
         value={search}
         onChange={(e) => {
           setSearch(e.target.value);
           setVisibleCount(10);
         }}
         style={{
-          padding: "8px",
-          marginBottom: "15px",
+          padding: "10px 12px",
+          marginBottom: "20px",
           width: "100%",
-          maxWidth: "300px",
+          maxWidth: "350px",
+          borderRadius: "10px",
+          border: "1px solid #ddd",
+          outline: "none",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
         }}
       />
 
@@ -93,15 +105,23 @@ const CarParts = () => {
           <div
             key={part.articleId}
             style={{
-              border: "1px solid #ccc",
-              margin: "10px 0",
-              padding: "10px",
-              borderRadius: "8px",
+              background: "#fff",
+              border: "1px solid #eee",
+              margin: "12px 0",
+              padding: "15px",
+              borderRadius: "12px",
+              boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
             }}
           >
-            <h3>{part.articleProductName}</h3>
-            <p>Código: {part.articleNo}</p>
-            <p>Proveedor: {part.supplierName}</p>
+            <h3 style={{ marginBottom: "5px" }}>
+              🚗 {part.articleProductName}
+            </h3>
+            <p style={{ margin: "4px 0" }}>
+              <strong>Código:</strong> {part.articleNo}
+            </p>
+            <p style={{ margin: "4px 0" }}>
+              <strong>Proveedor:</strong> {part.supplierName}
+            </p>
           </div>
         ))
       )}
@@ -111,8 +131,12 @@ const CarParts = () => {
         <button
           onClick={loadMore}
           style={{
-            marginTop: "15px",
+            marginTop: "20px",
             padding: "10px 20px",
+            background: "#111",
+            color: "#fff",
+            border: "none",
+            borderRadius: "10px",
             cursor: "pointer",
           }}
         >
