@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 const CarParts = () => {
   const [parts, setParts] = useState([]);
   const [visibleCount, setVisibleCount] = useState(10);
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -37,39 +38,68 @@ const CarParts = () => {
     fetchData();
   }, []);
 
-  // 🔵 estados
+  // 🔵 estados de carga
   if (loading) return <p>fetch and render data...</p>;
   if (error) return <p>{error}</p>;
 
-  // 🔥 elementos visibles (paginación)
-  const visibleParts = parts.slice(0, visibleCount);
+  // 🔍 FILTRO SEGURO
+  const filteredParts = parts.filter((part) =>
+    (part.articleProductName || "")
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+
+  // 🔥 PAGINACIÓN
+  const visibleParts = filteredParts.slice(0, visibleCount);
 
   const loadMore = () => {
     setVisibleCount((prev) => prev + 10);
   };
 
   return (
-    <div>
+    <div style={{ padding: "20px" }}>
       <h2>Repuestos de Carro</h2>
 
-      {visibleParts.map((part) => (
-        <div
-          key={part.articleId}
-          style={{
-            border: "1px solid #ccc",
-            margin: "10px 0",
-            padding: "10px",
-            borderRadius: "8px",
-          }}
-        >
-          <h3>{part.articleProductName}</h3>
-          <p>Código: {part.articleNo}</p>
-          <p>Proveedor: {part.supplierName}</p>
-        </div>
-      ))}
+      {/* 🔍 BUSCADOR (SIEMPRE VISIBLE) */}
+      <input
+        type="text"
+        placeholder="Buscar repuesto..."
+        value={search}
+        onChange={(e) => {
+          setSearch(e.target.value);
+          setVisibleCount(10);
+        }}
+        style={{
+          padding: "8px",
+          marginBottom: "15px",
+          width: "100%",
+          maxWidth: "300px",
+        }}
+      />
+
+      {/* 🔥 LISTA */}
+      {visibleParts.length === 0 ? (
+        <p>No hay repuestos encontrados</p>
+      ) : (
+        visibleParts.map((part) => (
+          <div
+            key={part.articleId}
+            style={{
+              border: "1px solid #ccc",
+              margin: "10px 0",
+              padding: "10px",
+              borderRadius: "8px",
+            }}
+          >
+            <h3>{part.articleProductName}</h3>
+            <p>Código: {part.articleNo}</p>
+            <p>Proveedor: {part.supplierName}</p>
+          </div>
+        ))
+      )}
 
       {/* 🔥 BOTÓN VER MÁS */}
-      {visibleCount < parts.length && (
+      {visibleCount < filteredParts.length && (
         <button
           onClick={loadMore}
           style={{
