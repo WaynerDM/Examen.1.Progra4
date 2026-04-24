@@ -10,17 +10,13 @@ const CarParts = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(
-          "https://api.jsonbin.io/v3/b/69e535e236566621a8ce210a",
-          {
-            method: "GET",
-            headers: {
-              "X-Access-Key":
-                "$2a$10$7L0fDBh3v77EF1usWl4EfOwXzcST0EFg9vISOOTUPBq7xcutgDBU2",
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const res = await fetch(import.meta.env.VITE_API_URL, {
+          method: "GET",
+          headers: {
+            "X-Access-Key": import.meta.env.VITE_JSONBIN_ACCESS_KEY,
+            "Content-Type": "application/json",
+          },
+        });
 
         const data = await res.json();
 
@@ -38,11 +34,12 @@ const CarParts = () => {
     fetchData();
   }, []);
 
-  // 🔵 estados de carga
-  if (loading) return <p>fetch and render data...</p>;
-  if (error) return <p>{error}</p>;
+  // 🔵 LOADING / ERROR / EMPTY STATE
+  if (loading) return <p>Cargando repuestos...</p>;
+  if (error) return <p>Error cargando datos 😢</p>;
+  if (parts.length === 0) return <p>No hay repuestos disponibles</p>;
 
-  // 🔍 FILTRO SEGURO
+  // 🔍 FILTRO BUSCADOR
   const filteredParts = parts.filter((part) =>
     (part.articleProductName || "")
       .toLowerCase()
@@ -58,9 +55,9 @@ const CarParts = () => {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h2>Repuestos de Carro</h2>
+      <h2>Repuestos de Carro 🚗</h2>
 
-      {/* 🔍 BUSCADOR (SIEMPRE VISIBLE) */}
+      {/* 🔍 BUSCADOR */}
       <input
         type="text"
         placeholder="Buscar repuesto..."
@@ -79,7 +76,7 @@ const CarParts = () => {
 
       {/* 🔥 LISTA */}
       {visibleParts.length === 0 ? (
-        <p>No hay repuestos encontrados</p>
+        <p>No se encontraron resultados</p>
       ) : (
         visibleParts.map((part) => (
           <div
@@ -98,7 +95,7 @@ const CarParts = () => {
         ))
       )}
 
-      {/* 🔥 BOTÓN VER MÁS */}
+      {/* 🔥 VER MÁS */}
       {visibleCount < filteredParts.length && (
         <button
           onClick={loadMore}
